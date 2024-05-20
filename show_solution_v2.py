@@ -10,7 +10,7 @@ class SolutionWindow:
             Label(self.solution_window, text=detail, font=("Arial", 12)).pack(padx=20, pady=5)
 
 
-class CalculationGUI:
+class StorageConvertor:
     def __init__(self, parent):
         self.parent = parent
         self.parent.title("Digital Storage Unit Converter")
@@ -107,5 +107,5 @@ class CalculationGUI:
 
 if __name__ == "__main__":
     root = Tk()
-    CalculationGUI(root)
+    StorageConvertor(root)
     root.mainloop()

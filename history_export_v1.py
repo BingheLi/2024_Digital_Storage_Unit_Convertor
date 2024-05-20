@@ -1,5 +1,6 @@
 from tkinter import *
 
+
 class StorageConverter:
 
     def __init__(self):
@@ -83,12 +84,6 @@ class StorageConverter:
                                       font=("Arial", "12", "bold"), width=12)
         self.solution_button.grid(row=6,column=2, columnspan=2, padx=5, pady=5)
 
-        self.donation_button = Button(self.storage_frame,
-                                      text="Donate",
-                                      bg="#FFC0CB",
-                                      fg="#000000",
-                                      font=("Arial", "12", "bold"), width=12)
-        self.donation_button.grid(row=7, columnspan=1, padx=5, pady=5)
 
 # main routine
 if __name__ == "__main__":
