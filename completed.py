@@ -14,12 +14,21 @@ class SolutionWindow:
             Label(self.solution_window, text=detail, font=("Arial", 12)).pack(padx=20, pady=5)
 
 
+class InstructionWindow:
+    def __init__(self, parent, instructions_text):
+        self.instruction_window = Toplevel(parent)
+        self.instruction_window.title("Instructions")
+
+        instructions_label = Label(self.instruction_window, text=instructions_text, font=("Arial", 12), justify=LEFT)
+        instructions_label.pack(padx=20, pady=20)
+
+
 class HistoryConverter:
     def __init__(self, parent):
         self.parent = parent
         self.parent.title("History Import, Conversion, and Export")
 
-        self.frame = Frame(parent, padx=10, pady=10, bg="#FFE4E1")
+        self.frame = Frame(parent, padx=10, pady=10, bg="#C0D6DF")
         self.frame.grid()
 
         self.unit_var = StringVar()
@@ -37,7 +46,7 @@ class HistoryConverter:
         self.convert_and_export_button = Button(self.frame, text="Convert and Export", bg="#4CAF50", fg="#FFFFFF", font=("Arial", "12", "bold"), width=20, command=self.convert_and_export)
         self.convert_and_export_button.grid(row=0, column=2, padx=5, pady=5)
 
-        self.history_label = Label(self.frame, text="Imported History:", font=("Arial", 12, "bold"), bg="#FFE4E1")
+        self.history_label = Label(self.frame, text="Imported History:", font=("Arial", 12, "bold"), bg="#C0D6DF")
         self.history_label.grid(row=1, columnspan=3, pady=5)
 
         self.history_text = Text(self.frame, height=10, width=50, state=DISABLED)
@@ -126,18 +135,18 @@ class StorageConvertor:
         self.parent = parent
         self.parent.title("Digital Storage Unit Converter")
 
-        self.all_conversions = []  # List to store conversion history
-
-        self.frame = Frame(parent, padx=10, pady=10, bg="#FFE4E1")
+        self.all_conversions = []
+        frame_bg = "#EAF6FF"
+        self.frame = Frame(parent, padx=10, pady=10, bg=frame_bg)
         self.frame.grid()
 
-        self.value_label = Label(self.frame, text="Value:", bg="#FFE4E1", fg="#FF69B4")
+        self.value_label = Label(self.frame, text="Value:", bg=frame_bg, fg="#000000")
         self.value_label.grid(row=0, column=0, padx=5, pady=5)
 
         self.value_entry = Entry(self.frame, font=("Arial", 12))
         self.value_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        self.from_label = Label(self.frame, text="From:", bg="#FFE4E1", fg="#FF69B4")
+        self.from_label = Label(self.frame, text="From:", bg=frame_bg, fg="#000000")
         self.from_label.grid(row=1, column=0, padx=5, pady=5)
 
         self.from_unit_var = StringVar()
@@ -145,7 +154,7 @@ class StorageConvertor:
         self.from_unit_dropdown = OptionMenu(self.frame, self.from_unit_var, "bytes", "kilobytes", "megabytes", "gigabytes")
         self.from_unit_dropdown.grid(row=1, column=1, padx=5, pady=5)
 
-        self.to_label = Label(self.frame, text="To:", bg="#FFE4E1", fg="#FF69B4")
+        self.to_label = Label(self.frame, text="To:", bg=frame_bg, fg="#000000")
         self.to_label.grid(row=2, column=0, padx=5, pady=5)
 
         self.to_unit_var = StringVar()
@@ -153,24 +162,33 @@ class StorageConvertor:
         self.to_unit_dropdown = OptionMenu(self.frame, self.to_unit_var, "bytes", "kilobytes", "megabytes", "gigabytes")
         self.to_unit_dropdown.grid(row=2, column=1, padx=5, pady=5)
 
-        button_bg = "#FF69B4"
-        self.solution_button = Button(self.frame, text="Show Solution", bg=button_bg, fg="#FFFFFF", font=("Arial", 12, "bold"), width=12, command=self.show_solution, state=DISABLED)
+        self.solution = Label(self.frame, text="", bg=frame_bg, fg="#000000", font=("Arial", 12, "bold"))
+        self.solution.grid(row=4, columnspan=5, padx=5, pady=5)
+
+        button_bg = "#232528"
+        button_fg = "#FFFFFF"
+
+        self.clear_button = Button(self.frame, text="Clear", bg=button_bg, fg=button_fg, font=("Arial", "12", "bold"), width=12, command=self.clear_entry)
+        self.clear_button.grid(row=0, column=2, padx=5, pady=5)
+
+        self.solution_button = Button(self.frame, text="Show Solution", bg=button_bg, fg=button_fg, font=("Arial", 12, "bold"), width=12, command=self.show_solution, state=DISABLED)
         self.solution_button.grid(row=3, column=2, columnspan=1, padx=5, pady=5)
 
-        self.convert_button = Button(self.frame, text="Convert", bg=button_bg, fg="#FFFFFF", font=("Arial", 12, "bold"), width=12, command=self.convert)
-        self.convert_button.grid(row=3, column=0, columnspan=1, padx=5, pady=5)
-
-        self.solution = Label(self.frame, text="", bg="#FFE4E1", fg="#FF69B4",font=("Arial", 12, "bold"))
-        self.solution.grid(row=4, columnspan=5, padx=5, pady=5)
+        self.instructions_button = Button(self.frame, text="Instructions", bg=button_bg, fg=button_fg, font=("Arial", 12, "bold"), width=12, command=self.show_instructions)
+        self.instructions_button.grid(row=3, column=0, columnspan=1, padx=5, pady=5)
 
         self.current_solution = ""
         self.solution_details = []
 
-        self.history_export_button = Button(self.frame, text="History / Export", bg="#FFC0CB", fg="#000000", font=("Arial", "12", "bold"), width=12, command=self.show_history, state=DISABLED)
-        self.history_export_button.grid(row=7, column=2, columnspan=2, padx=5, pady=5)
+        self.history_export_button = Button(self.frame, text="History / Export", bg=button_bg, fg=button_fg, font=("Arial", 12, "bold"), width=12, command=self.show_history, state=DISABLED)
+        self.history_export_button.grid(row=8, column=2, columnspan=2, padx=5, pady=5)
 
-        self.history_import_button = Button(self.frame, text="History / Import", bg="#ADD8E6", fg="#000000", font=("Arial", "12", "bold"), width=12, command=self.open_history_converter)
-        self.history_import_button.grid(row=7, column=0, columnspan=1, padx=5, pady=5)
+        self.history_import_button = Button(self.frame, text="History / Import", bg=button_bg, fg=button_fg, font=("Arial", 12, "bold"), width=12, command=self.open_history_converter)
+        self.history_import_button.grid(row=8, column=0, columnspan=1, padx=5, pady=5)
+
+        self.convert_button = Button(self.frame, text="Convert", bg=button_bg, fg=button_fg, font=("Arial", 12, "bold"), width=12, command=self.convert)
+        self.convert_button.grid(row=7, column=1, columnspan=1, padx=5, pady=5)
+
 
     def convert(self):
         from_unit = self.from_unit_var.get()
@@ -223,6 +241,22 @@ class StorageConvertor:
             self.solution_button.config(state=DISABLED)
             self.current_solution = ""
             self.solution_details = []
+
+    def show_instructions(self):
+        instructions_text = (
+            "1. Enter the value you want to convert in the 'Value' field.\n"
+            "2. Select the unit you are converting from using the 'From' dropdown.\n"
+            "3. Select the unit you are converting to using the 'To' dropdown.\n"
+            "4. Click 'Convert' to perform the conversion.\n"
+            "5. The result will be displayed below the 'Convert' button.\n"
+            "6. Click 'Show Solution' to see detailed conversion steps.\n"
+            "7. Click 'History / Export' to view and save your conversion history.\n"
+            "8. Click 'History / Import' to import and convert historical data."
+        )
+        InstructionWindow(self.parent, instructions_text)
+
+    def clear_entry(self):
+        self.value_entry.delete(0, END)
 
     def show_solution(self):
         if self.current_solution:
