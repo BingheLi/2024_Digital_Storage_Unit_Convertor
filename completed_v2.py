@@ -23,7 +23,7 @@ class InstructionWindow:
         instructions_label.pack(padx=20, pady=20)
 
 
-class HistoryConverter:
+class HistoryImport:
     def __init__(self, parent):
         self.parent = parent
         self.parent.title("History Import, Conversion, and Export")
@@ -271,7 +271,7 @@ class StorageConvertor:
 
     def open_history_converter(self):
         history_converter_window = Toplevel(self.parent)
-        history_converter_app = HistoryConverter(history_converter_window)
+        history_converter_app = HistoryImport(history_converter_window)
 
 
 class HistoryExport:
