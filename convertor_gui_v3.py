@@ -8,11 +8,7 @@ class StorageConverter:
         self.storage_frame = Frame(padx=10, pady=10, bg="#FFE4E1")
         self.storage_frame.grid()
 
-        self.storage_heading = Label(self.storage_frame,
-                                     text="Digital Storage Unit Converter",
-                                     font=("Arial", "16", "bold"),
-                                     bg="#FFE4E1",
-                                     fg="#FF69B4")
+        self.storage_heading = Label(self.storage_frame, text="Digital Storage Unit Converter", font=("Arial", "16", "bold"), bg="#FFE4E1", fg="#FF69B4")
         self.storage_heading.grid(row=0, columnspan=4, pady=(0, 10))
 
         instructions = "Please enter a value below and " \

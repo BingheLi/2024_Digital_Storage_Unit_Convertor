@@ -14,6 +14,15 @@ class SolutionWindow:
             Label(self.solution_window, text=detail, font=("Arial", 12)).pack(padx=20, pady=5)
 
 
+class InstructionWindow:
+    def __init__(self, parent, instructions_text):
+        self.instruction_window = Toplevel(parent)
+        self.instruction_window.title("Instructions")
+
+        instructions_label = Label(self.instruction_window, text=instructions_text, font=("Arial", 12), justify=LEFT)
+        instructions_label.pack(padx=20, pady=20)
+
+
 class HistoryConverter:
     def __init__(self, parent):
         self.parent = parent
@@ -135,12 +144,6 @@ class StorageConvertor:
                                      font=("Arial", "16", "bold"), bg=frame_bg, fg="#000000")
         self.storage_heading.grid(row=0, columnspan=4, pady=(0, 10))
 
-        instructions = "Please enter a value below and " \
-                       "select the units to convert from and to."
-
-        self.instructions = Label(self.frame, text=instructions, wrap=250, width=40, justify="left", bg=frame_bg, fg="#000000")
-        self.instructions.grid(row=1, columnspan=4, pady=(0, 10))
-
         self.value_label = Label(self.frame, text="Value:", bg=frame_bg, fg="#000000")
         self.value_label.grid(row=2, column=0, padx=5, pady=5)
 
@@ -175,6 +178,9 @@ class StorageConvertor:
         self.solution_button = Button(self.frame, text="Show Solution", bg=button_bg, fg=button_fg, font=("Arial", 12, "bold"), width=12, command=self.show_solution, state=DISABLED)
         self.solution_button.grid(row=6, column=2, columnspan=1, padx=5, pady=5)
 
+        self.instructions_button = Button(self.frame, text="Instructions", bg=button_bg, fg=button_fg, font=("Arial", 12, "bold"), width=12, command=self.show_instructions)
+        self.instructions_button.grid(row=6, column=0, columnspan=1, padx=5, pady=5)
+
         self.current_solution = ""
         self.solution_details = []
 
@@ -185,7 +191,7 @@ class StorageConvertor:
         self.history_import_button.grid(row=8, column=0, columnspan=1, padx=5, pady=5)
 
         self.convert_button = Button(self.frame, text="Convert", bg=button_bg, fg=button_fg, font=("Arial", 12, "bold"), width=12, command=self.convert)
-        self.convert_button.grid(row=6, column=0, columnspan=1, padx=5, pady=5)
+        self.convert_button.grid(row=7, column=1, columnspan=1, padx=5, pady=5)
 
 
     def convert(self):
@@ -240,6 +246,18 @@ class StorageConvertor:
             self.current_solution = ""
             self.solution_details = []
 
+    def show_instructions(self):
+        instructions_text = (
+            "1. Enter the value you want to convert in the 'Value' field.\n"
+            "2. Select the unit you are converting from using the 'From' dropdown.\n"
+            "3. Select the unit you are converting to using the 'To' dropdown.\n"
+            "4. Click 'Convert' to perform the conversion.\n"
+            "5. The result will be displayed below the 'Convert' button.\n"
+            "6. Click 'Show Solution' to see detailed conversion steps.\n"
+            "7. Click 'History / Export' to view and save your conversion history.\n"
+            "8. Click 'History / Import' to import and convert historical data."
+        )
+        InstructionWindow(self.parent, instructions_text)
 
     def clear_entry(self):
         self.value_entry.delete(0, END)
