@@ -5,20 +5,26 @@ from tkinter import filedialog
 import re
 
 
+# Class to display the conversion solution details in a new window
 class SolutionWindow:
     def __init__(self, parent, solution_details):
+        # Create a new top-level window for displaying the solution details
         self.solution_window = Toplevel(parent)
         self.solution_window.title("Conversion Solution")
 
+        # Display each detail in the solution details list using a Label
         for detail in solution_details:
             Label(self.solution_window, text=detail, font=("Arial", 12)).pack(padx=20, pady=5)
 
 
+# Class for displaying instructions in a new window
 class InstructionWindow:
     def __init__(self, parent, instructions_text):
+        # Create a new top-level window for instructions
         self.instruction_window = Toplevel(parent)
         self.instruction_window.title("Instructions")
 
+        # Add a label to display the instructions text
         instructions_label = Label(self.instruction_window, text=instructions_text, font=("Arial", 12), justify=LEFT)
         instructions_label.pack(padx=20, pady=20)
 
@@ -28,52 +34,52 @@ class HistoryImport:
         self.parent = parent
         self.parent.title("History Import, Conversion, and Export")
 
-        self.frame = Frame(parent, padx=10, pady=10, bg="#C0D6DF")
+        # Set up the main frame
+        self.frame = Frame(parent, padx=10, pady=10, bg="#FFE4E1")
         self.frame.grid()
 
+        # Variables and UI elements
         self.unit_var = StringVar()
         self.unit_var.set("bytes")
-
         self.file_path = None
         self.conversions = []
 
-        self.import_button = Button(self.frame, text="Import History", bg="#ADD8E6", fg="#000000", font=("Arial", "12", "bold"), width=20, command=self.import_history)
+        self.import_button = Button(self.frame, text="Import History", bg="#ADD8E6", fg="#000000",
+                                    font=("Arial", "12", "bold"), width=20, command=self.import_history)
         self.import_button.grid(row=0, column=0, padx=5, pady=5)
 
         self.unit_dropdown = OptionMenu(self.frame, self.unit_var, "bytes", "kilobytes", "megabytes", "gigabytes")
         self.unit_dropdown.grid(row=0, column=1, padx=5, pady=5)
 
-        self.convert_and_export_button = Button(self.frame, text="Convert and Export", bg="#4CAF50", fg="#FFFFFF", font=("Arial", "12", "bold"), width=20, command=self.convert_and_export)
+        self.convert_and_export_button = Button(self.frame, text="Convert and Export", bg="#4CAF50", fg="#FFFFFF",
+                                                font=("Arial", "12", "bold"), width=20, command=self.convert_and_export)
         self.convert_and_export_button.grid(row=0, column=2, padx=5, pady=5)
 
-        self.history_label = Label(self.frame, text="Imported History:", font=("Arial", 12, "bold"), bg="#C0D6DF")
+        self.history_label = Label(self.frame, text="Imported History:", font=("Arial", 12, "bold"), bg="#FFE4E1")
         self.history_label.grid(row=1, columnspan=3, pady=5)
 
         self.history_text = Text(self.frame, height=10, width=50, state=DISABLED)
         self.history_text.grid(row=2, columnspan=3, padx=5, pady=5)
 
+    # Method to import history from a file
     def import_history(self):
         self.file_path = filedialog.askopenfilename()
-
         if not self.file_path:
             return
-
         try:
             with open(self.file_path, "r") as file:
                 lines = file.readlines()
-
             self.conversions.clear()
             self.process_lines(lines)
-
             self.history_text.config(state=NORMAL)
             self.history_text.delete(1.0, END)
             for conv in self.conversions:
                 self.history_text.insert(END, conv + "\n")
             self.history_text.config(state=DISABLED)
-
         except Exception as e:
             print(f"Error importing history: {str(e)}")
 
+    # Method to process each line of the imported file and convert units
     def process_lines(self, lines):
         target_unit = self.unit_var.get()
         conversion_factors = {
@@ -83,31 +89,29 @@ class HistoryImport:
             "gigabytes": 1024 ** 3
         }
         for line in lines:
-            if not line.startswith("****") and not line.startswith("Generated") and not line.startswith("Here"):
+            if not (line.startswith("****") or line.startswith("Generated") or line.startswith("Here")):
                 parts = line.split()
                 if len(parts) >= 4:
                     value = float(parts[0])
                     from_unit = parts[1]
                     converted_value = value * (conversion_factors[from_unit] / conversion_factors[target_unit])
-                    formatted_value = "{:.5f}".format(converted_value) if converted_value >= 1e-5 else "{:.5e}".format(converted_value)
+                    formatted_value = "{:.5f}".format(converted_value) if converted_value >= 1e-5 else "{:.5e}".format(
+                        converted_value)
                     self.conversions.append(f"{value}\t{from_unit}\t{formatted_value}\t{target_unit}")
 
+    # Method to convert and export the history to a file
     def convert_and_export(self):
         if not self.file_path:
             print("No file selected. Please import a history file first.")
             return
-
         try:
             filename = filedialog.asksaveasfilename(defaultextension=".txt")
             if not filename:
                 return
-
             with open(self.file_path, "r") as file:
                 lines = file.readlines()
-
             self.conversions.clear()
             self.process_lines(lines)
-
             with open(filename, "w") as file:
                 heading = "**** Digital Storage Calculations ****\n"
                 generated_date = f"Generated: {self.get_date()}\n"
@@ -115,12 +119,9 @@ class HistoryImport:
                 file.write(heading)
                 file.write(generated_date)
                 file.write(sub_heading)
-
                 for conv in self.conversions:
                     file.write(conv + "\n")
-
             print("History converted and exported successfully.")
-
         except Exception as e:
             print(f"Error converting and exporting history: {str(e)}")
 
@@ -133,16 +134,19 @@ class HistoryImport:
 class StorageConvertor:
     def __init__(self, parent):
         self.parent = parent
-        self.parent.title("Digital Storage Unit Converter")
+        self.parent.title("Digital Storage Unit Converter")  # Set the title of the main window
 
-        self.all_conversions = []
+        self.all_conversions = []  # List to store conversion history
         frame_bg = "#EAF6FF"
+        # Create the main frame
         self.frame = Frame(parent, padx=10, pady=10, bg=frame_bg)
         self.frame.grid()
 
         self.storage_heading = Label(self.frame, text="Digital Storage Unit Converter",
                                      font=("Arial", "16", "bold"), bg=frame_bg, fg="#000000")
         self.storage_heading.grid(row=0, columnspan=4, pady=(0, 10))
+
+        # Create and position labels, entry fields, and dropdown menus
 
         self.value_label = Label(self.frame, text="Value:", bg=frame_bg, fg="#000000")
         self.value_label.grid(row=2, column=0, padx=5, pady=5)
@@ -166,6 +170,8 @@ class StorageConvertor:
         self.to_unit_dropdown = OptionMenu(self.frame, self.to_unit_var, "bytes", "kilobytes", "megabytes", "gigabytes")
         self.to_unit_dropdown.grid(row=4, column=1, padx=5, pady=5)
 
+        # Label to display the conversion result
+
         self.solution = Label(self.frame, text="", bg=frame_bg, fg="#000000", font=("Arial", 12, "bold"))
         self.solution.grid(row=5, columnspan=5, padx=5, pady=5)
 
@@ -174,10 +180,11 @@ class StorageConvertor:
 
         self.clear_button = Button(self.frame, text="Clear", bg=button_bg, fg=button_fg, font=("Arial", "12", "bold"), width=12, command=self.clear_entry)
         self.clear_button.grid(row=2, column=2, padx=5, pady=5)
+        # Button to show detailed solution
 
         self.solution_button = Button(self.frame, text="Show Solution", bg=button_bg, fg=button_fg, font=("Arial", 12, "bold"), width=12, command=self.show_solution, state=DISABLED)
         self.solution_button.grid(row=6, column=2, columnspan=1, padx=5, pady=5)
-
+        # Button to open instruction window
         self.instructions_button = Button(self.frame, text="Instructions", bg=button_bg, fg=button_fg, font=("Arial", 12, "bold"), width=12, command=self.show_instructions)
         self.instructions_button.grid(row=6, column=0, columnspan=1, padx=5, pady=5)
 
@@ -189,10 +196,10 @@ class StorageConvertor:
 
         self.history_import_button = Button(self.frame, text="History / Import", bg=button_bg, fg=button_fg, font=("Arial", 12, "bold"), width=12, command=self.open_history_converter)
         self.history_import_button.grid(row=8, column=0, columnspan=1, padx=5, pady=5)
+        # Button to convert the input value
 
         self.convert_button = Button(self.frame, text="Convert", bg=button_bg, fg=button_fg, font=("Arial", 12, "bold"), width=12, command=self.convert)
         self.convert_button.grid(row=7, column=1, columnspan=1, padx=5, pady=5)
-
 
     def convert(self):
         from_unit = self.from_unit_var.get()
@@ -207,38 +214,42 @@ class StorageConvertor:
 
         try:
             value_to_convert = float(value_to_convert)
-            conversion_factors = {
-                "bytes": 1,
-                "kilobytes": 1024,
-                "megabytes": 1024 ** 2,
-                "gigabytes": 1024 ** 3
-            }
+            if value_to_convert > 0:
+                conversion_factors = {
+                    "bytes": 1,
+                    "kilobytes": 1024,
+                    "megabytes": 1024 ** 2,
+                    "gigabytes": 1024 ** 3
+                }
 
-            converted_value = value_to_convert * (conversion_factors[from_unit] / conversion_factors[to_unit])
-            conversion_factor = conversion_factors[from_unit] / conversion_factors[to_unit]
+                converted_value = value_to_convert * (conversion_factors[from_unit] / conversion_factors[to_unit])
+                conversion_factor = conversion_factors[from_unit] / conversion_factors[to_unit]
 
-            if converted_value < 1e-5:
-                formatted_value = "{:.5e}".format(converted_value)
-            else:
-                formatted_value = "{:.5f}".format(converted_value)
+                if converted_value < 1e-5:
+                    formatted_value = "{:.5e}".format(converted_value)
+                else:
+                    formatted_value = "{:.5f}".format(converted_value)
 
-            self.current_solution = f"{value_to_convert} {from_unit} is {formatted_value} {to_unit}"
-            self.solution.config(text=self.current_solution)
-            self.solution_button.config(state=NORMAL)
+                self.current_solution = f"{value_to_convert} {from_unit} is {formatted_value} {to_unit}"
+                self.solution.config(text=self.current_solution)
+                self.solution_button.config(state=NORMAL)
 
-            self.solution_details = [
-                f"Value entered: {value_to_convert} {from_unit}",
-                f"Conversion factor from {from_unit} to {to_unit}: {conversion_factor}",
-                f"Converted value: {formatted_value} {to_unit}"
-            ]
+                self.solution_details = [
+                    f"Value entered: {value_to_convert} {from_unit}",
+                    f"Conversion factor from {from_unit} to {to_unit}: {conversion_factor}",
+                    f"Converted value: {formatted_value} {to_unit}"
+                ]
 
-            # Add the current conversion to the history
-            self.all_conversions.append(self.current_solution)
-            # Keep only the last 50 conversions
-            if len(self.all_conversions) > 50:
-                self.all_conversions.pop(0)
+                # Add the current conversion to the history
+                self.all_conversions.append(self.current_solution)
+                # Keep only the last 50 conversions
+                if len(self.all_conversions) > 50:
+                    self.all_conversions.pop(0)
 
-            self.history_export_button.config(state=NORMAL)
+                self.history_export_button.config(state=NORMAL)
+
+            if value_to_convert < 0:
+                self.solution.config(text="Invalid input. Please enter a positive number.")
 
         except ValueError:
             self.solution.config(text="Invalid input. Please enter a valid number.")
@@ -341,9 +352,11 @@ class HistoryExport:
         self.dismiss_button.grid(row=0, column=1, padx=10, pady=10)
 
     def get_calc_string(self, var_calculations):
+        # Generate a string representation of the calculation history
         max_calcs = self.var_max_calcs.get()
         calc_string = ""
 
+        # Create a string of calculations, oldest first
         oldest_first = ""
         for item in var_calculations:
             oldest_first += item
@@ -351,11 +364,13 @@ class HistoryExport:
 
         self.var_calc_list.set(oldest_first)
 
+        # Determine how many calculations to show
         if len(var_calculations) >= max_calcs:
             stop = max_calcs
         else:
             stop = len(var_calculations)
 
+        # Create a string of the most recent calculations, newest first
         for item in range(0, stop):
             calc_string += var_calculations[len(var_calculations) - item - 1]
             calc_string += "\n"
@@ -364,6 +379,7 @@ class HistoryExport:
         return calc_string
 
     def make_file(self):
+        # Handle the export of the history to a file
         filename = self.filename_entry.get()
 
         filename_ok = ""
@@ -387,6 +403,8 @@ class HistoryExport:
             self.filename_entry.config(bg="#F8CECC")
 
     def get_date(self):
+        # Get the current date in a specific format
+
         today = date.today()
         day = today.strftime("%d")
         month = today.strftime("%m")
@@ -399,6 +417,8 @@ class HistoryExport:
 
     @staticmethod
     def check_filename(filename):
+        # Validate the filename ensuring it contains only valid characters
+
         problem = ""
         valid_char = "[A-Za-z0-9_]"
 
@@ -417,6 +437,7 @@ class HistoryExport:
         return problem
 
     def write_to_file(self):
+        # Write the calculation history to a file
         filename = self.var_filename.get()
         generated_date = self.var_todays_date.get()
 
@@ -442,9 +463,9 @@ class HistoryExport:
             text_file.writelines(to_output_list)
 
     def close_history(self, partner):
+        # Close the history/export window and re-enable the main window's history button
         partner.history_export_button.config(state=NORMAL)
         self.history_box.destroy()
-
 
 if __name__ == "__main__":
     root = Tk()

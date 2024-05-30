@@ -1,36 +1,41 @@
 from tkinter import *
 
-
+# The main GUI class for the digital storage unit converter.
 class CalculationGUI:
     def __init__(self, parent):
         self.parent = parent
         self.parent.title("Digital Storage Unit Converter")
 
+        # Main frame setup.
         self.frame = Frame(parent, padx=10, pady=10, bg="#FFE4E1")
         self.frame.grid()
 
+        # Label and dropdown for the "From" unit.
         self.from_label = Label(self.frame, text="From:", bg="#FFE4E1", fg="#FF69B4")
         self.from_label.grid(row=0, column=0, padx=5, pady=5)
 
         self.from_unit_var = StringVar()
         self.from_unit_var.set("bytes")
         self.from_unit_dropdown = OptionMenu(self.frame, self.from_unit_var,
-                                              "bytes", "kilobytes", "megabytes", "gigabytes")
+                                             "bytes", "kilobytes", "megabytes", "gigabytes")
         self.from_unit_dropdown.grid(row=0, column=1, padx=5, pady=5)
 
+        # Label and dropdown for the "To" unit.
         self.to_label = Label(self.frame, text="To:", bg="#FFE4E1", fg="#FF69B4")
         self.to_label.grid(row=1, column=0, padx=5, pady=5)
 
         self.to_unit_var = StringVar()
         self.to_unit_var.set("kilobytes")
         self.to_unit_dropdown = OptionMenu(self.frame, self.to_unit_var,
-                                            "bytes", "kilobytes", "megabytes", "gigabytes")
+                                           "bytes", "kilobytes", "megabytes", "gigabytes")
         self.to_unit_dropdown.grid(row=1, column=1, padx=5, pady=5)
 
+        # Button to trigger the conversion.
         self.convert_button = Button(self.frame, text="Convert", bg="#FF69B4", fg="#FFFFFF",
                                      font=("Arial", "12", "bold"), width=12, command=self.convert)
         self.convert_button.grid(row=2, columnspan=2, padx=5, pady=5)
 
+    # Method to perform the conversion.
     def convert(self):
         from_unit = self.from_unit_var.get()
         to_unit = self.to_unit_var.get()
@@ -42,7 +47,7 @@ class CalculationGUI:
             "gigabytes": 1024 ** 3
         }
 
-        value_to_convert = 1287  # Example value
+        value_to_convert = 1287  # Example value for demonstration.
         converted_value = value_to_convert * (conversion_factors[from_unit] / conversion_factors[to_unit])
 
         result_text = f"{value_to_convert} {from_unit} is {round(converted_value, 5)} {to_unit}"

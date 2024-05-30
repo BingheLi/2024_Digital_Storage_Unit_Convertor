@@ -7,47 +7,99 @@ import re
 
 # Class to display the conversion solution details in a new window
 class SolutionWindow:
+    window_open = False
+
     def __init__(self, parent, solution_details):
+        if SolutionWindow.window_open:
+            return
+        SolutionWindow.window_open = True
+
         # Create a new top-level window for displaying the solution details
+
         self.solution_window = Toplevel(parent)
         self.solution_window.title("Conversion Solution")
+        self.solution_window.protocol("WM_DELETE_WINDOW", self.on_close)
 
         # Display each detail in the solution details list using a Label
+
         for detail in solution_details:
             Label(self.solution_window, text=detail, font=("Arial", 12)).pack(padx=20, pady=5)
 
+    def on_close(self):
+        SolutionWindow.window_open = False
+        self.solution_window.destroy()
+
+
+# Class for displaying instructions in a new window
+
+class InstructionWindow:
+    window_open = False
+
+    def __init__(self, parent, instructions_text):
+        if InstructionWindow.window_open:
+            return
+        InstructionWindow.window_open = True
+
+        # Create a new top-level window for instructions
+
+        self.instruction_window = Toplevel(parent)
+        self.instruction_window.title("Instructions")
+        self.instruction_window.protocol("WM_DELETE_WINDOW", self.on_close)
+
+        # Add a label to display the instructions text
+
+        instructions_label = Label(self.instruction_window, text=instructions_text, font=("Arial", 12), justify=LEFT)
+        instructions_label.pack(padx=20, pady=20)
+
+    def on_close(self):
+        InstructionWindow.window_open = False
+        self.instruction_window.destroy()
+
 
 class HistoryImport:
+    window_open = False
+
     def __init__(self, parent):
+        if HistoryImport.window_open:
+            return
+        HistoryImport.window_open = True
+
         self.parent = parent
         self.parent.title("History Import, Conversion, and Export")
 
-        # Setup the main frame
-        self.frame = Frame(parent, padx=10, pady=10, bg="#FFE4E1")
+        # Set up the main frame
+
+        self.frame = Frame(parent, padx=10, pady=10, bg="#C0D6DF")
         self.frame.grid()
 
         # Variables and UI elements
+
         self.unit_var = StringVar()
         self.unit_var.set("bytes")
+
         self.file_path = None
         self.conversions = []
 
-        self.import_button = Button(self.frame, text="Import History", bg="#ADD8E6", fg="#000000",
-                                    font=("Arial", "12", "bold"), width=20, command=self.import_history)
+        self.import_button = Button(self.frame, text="Import History", bg="#ADD8E6", fg="#000000", font=("Arial", "12", "bold"), width=20, command=self.import_history)
         self.import_button.grid(row=0, column=0, padx=5, pady=5)
 
         self.unit_dropdown = OptionMenu(self.frame, self.unit_var, "bytes", "kilobytes", "megabytes", "gigabytes")
         self.unit_dropdown.grid(row=0, column=1, padx=5, pady=5)
 
-        self.convert_and_export_button = Button(self.frame, text="Convert and Export", bg="#4CAF50", fg="#FFFFFF",
-                                                font=("Arial", "12", "bold"), width=20, command=self.convert_and_export)
+        self.convert_and_export_button = Button(self.frame, text="Convert and Export", bg="#4CAF50", fg="#FFFFFF", font=("Arial", "12", "bold"), width=20, command=self.convert_and_export)
         self.convert_and_export_button.grid(row=0, column=2, padx=5, pady=5)
 
-        self.history_label = Label(self.frame, text="Imported History:", font=("Arial", 12, "bold"), bg="#FFE4E1")
+        self.history_label = Label(self.frame, text="Imported History:", font=("Arial", 12, "bold"), bg="#C0D6DF")
         self.history_label.grid(row=1, columnspan=3, pady=5)
 
         self.history_text = Text(self.frame, height=10, width=50, state=DISABLED)
         self.history_text.grid(row=2, columnspan=3, padx=5, pady=5)
+
+        self.parent.protocol("WM_DELETE_WINDOW", self.on_close)
+
+    def on_close(self):
+        HistoryImport.window_open = False
+        self.parent.destroy()
 
     # Method to import history from a file
     def import_history(self):
@@ -134,12 +186,6 @@ class StorageConvertor:
                                      font=("Arial", "16", "bold"), bg=frame_bg, fg="#000000")
         self.storage_heading.grid(row=0, columnspan=4, pady=(0, 10))
 
-        instructions = "Please enter a value below and " \
-                       "select the units to convert from and to."
-
-        self.instructions = Label(self.frame, text=instructions, wrap=250, width=40, justify="left", bg=frame_bg, fg="#000000")
-        self.instructions.grid(row=1, columnspan=4, pady=(0, 10))
-
         # Create and position labels, entry fields, and dropdown menus
 
         self.value_label = Label(self.frame, text="Value:", bg=frame_bg, fg="#000000")
@@ -163,6 +209,7 @@ class StorageConvertor:
         self.to_unit_var.set("kilobytes")
         self.to_unit_dropdown = OptionMenu(self.frame, self.to_unit_var, "bytes", "kilobytes", "megabytes", "gigabytes")
         self.to_unit_dropdown.grid(row=4, column=1, padx=5, pady=5)
+
         # Label to display the conversion result
 
         self.solution = Label(self.frame, text="", bg=frame_bg, fg="#000000", font=("Arial", 12, "bold"))
@@ -177,6 +224,9 @@ class StorageConvertor:
 
         self.solution_button = Button(self.frame, text="Show Solution", bg=button_bg, fg=button_fg, font=("Arial", 12, "bold"), width=12, command=self.show_solution, state=DISABLED)
         self.solution_button.grid(row=6, column=2, columnspan=1, padx=5, pady=5)
+        # Button to open instruction window
+        self.instructions_button = Button(self.frame, text="Instructions", bg=button_bg, fg=button_fg, font=("Arial", 12, "bold"), width=12, command=self.show_instructions)
+        self.instructions_button.grid(row=6, column=0, columnspan=1, padx=5, pady=5)
 
         self.current_solution = ""
         self.solution_details = []
@@ -189,8 +239,7 @@ class StorageConvertor:
         # Button to convert the input value
 
         self.convert_button = Button(self.frame, text="Convert", bg=button_bg, fg=button_fg, font=("Arial", 12, "bold"), width=12, command=self.convert)
-        self.convert_button.grid(row=6, column=0, columnspan=1, padx=5, pady=5)
-
+        self.convert_button.grid(row=7, column=1, columnspan=1, padx=5, pady=5)
 
     def convert(self):
         from_unit = self.from_unit_var.get()
@@ -205,38 +254,42 @@ class StorageConvertor:
 
         try:
             value_to_convert = float(value_to_convert)
-            conversion_factors = {
-                "bytes": 1,
-                "kilobytes": 1024,
-                "megabytes": 1024 ** 2,
-                "gigabytes": 1024 ** 3
-            }
+            if value_to_convert > 0:
+                conversion_factors = {
+                    "bytes": 1,
+                    "kilobytes": 1024,
+                    "megabytes": 1024 ** 2,
+                    "gigabytes": 1024 ** 3
+                }
 
-            converted_value = value_to_convert * (conversion_factors[from_unit] / conversion_factors[to_unit])
-            conversion_factor = conversion_factors[from_unit] / conversion_factors[to_unit]
+                converted_value = value_to_convert * (conversion_factors[from_unit] / conversion_factors[to_unit])
+                conversion_factor = conversion_factors[from_unit] / conversion_factors[to_unit]
 
-            if converted_value < 1e-5:
-                formatted_value = "{:.5e}".format(converted_value)
-            else:
-                formatted_value = "{:.5f}".format(converted_value)
+                if converted_value < 1e-5:
+                    formatted_value = "{:.5e}".format(converted_value)
+                else:
+                    formatted_value = "{:.5f}".format(converted_value)
 
-            self.current_solution = f"{value_to_convert} {from_unit} is {formatted_value} {to_unit}"
-            self.solution.config(text=self.current_solution)
-            self.solution_button.config(state=NORMAL)
+                self.current_solution = f"{value_to_convert} {from_unit} is {formatted_value} {to_unit}"
+                self.solution.config(text=self.current_solution)
+                self.solution_button.config(state=NORMAL)
 
-            self.solution_details = [
-                f"Value entered: {value_to_convert} {from_unit}",
-                f"Conversion factor from {from_unit} to {to_unit}: {conversion_factor}",
-                f"Converted value: {formatted_value} {to_unit}"
-            ]
+                self.solution_details = [
+                    f"Value entered: {value_to_convert} {from_unit}",
+                    f"Conversion factor from {from_unit} to {to_unit}: {conversion_factor}",
+                    f"Converted value: {formatted_value} {to_unit}"
+                ]
 
-            # Add the current conversion to the history
-            self.all_conversions.append(self.current_solution)
-            # Keep only the last 50 conversions
-            if len(self.all_conversions) > 50:
-                self.all_conversions.pop(0)
+                # Add the current conversion to the history
+                self.all_conversions.append(self.current_solution)
+                # Keep only the last 50 conversions
+                if len(self.all_conversions) > 50:
+                    self.all_conversions.pop(0)
 
-            self.history_export_button.config(state=NORMAL)
+                self.history_export_button.config(state=NORMAL)
+
+            if value_to_convert < 0:
+                self.solution.config(text="Invalid input. Please enter a positive number.")
 
         except ValueError:
             self.solution.config(text="Invalid input. Please enter a valid number.")
@@ -244,6 +297,18 @@ class StorageConvertor:
             self.current_solution = ""
             self.solution_details = []
 
+    def show_instructions(self):
+        instructions_text = (
+            "1. Enter the value you want to convert in the 'Value' field.\n"
+            "2. Select the unit you are converting from using the 'From' dropdown.\n"
+            "3. Select the unit you are converting to using the 'To' dropdown.\n"
+            "4. Click 'Convert' to perform the conversion.\n"
+            "5. The result will be displayed below the 'Convert' button.\n"
+            "6. Click 'Show Solution' to see detailed conversion steps.\n"
+            "7. Click 'History / Export' to view and save your conversion history.\n"
+            "8. Click 'History / Import' to import and convert historical data."
+        )
+        InstructionWindow(self.parent, instructions_text)
 
     def clear_entry(self):
         self.value_entry.delete(0, END)
@@ -256,8 +321,9 @@ class StorageConvertor:
         HistoryExport(self, self.all_conversions)
 
     def open_history_converter(self):
-        history_converter_window = Toplevel(self.parent)
-        history_converter_app = HistoryImport(history_converter_window)
+        if HistoryImport.window_open:
+            return
+        HistoryImport(Toplevel(self.parent))
 
 
 class HistoryExport:
@@ -293,7 +359,6 @@ class HistoryExport:
 
         num_calcs = len(calc_list)
 
-        # Adjust the background color and message based on the number of calculations
         if num_calcs > max_calcs:
             calc_background = "#FFE6CC"
             showing_all = f"Here are your recent calculations ({max_calcs}/{num_calcs} calculations shown). Please export your calculations to see your full calculation history."
@@ -393,10 +458,15 @@ class HistoryExport:
 
     @staticmethod
     def check_filename(filename):
-        # Validate the filename ensuring it contains only valid characters
-
         problem = ""
         valid_char = "[A-Za-z0-9_]"
+        # windows reserved keywords listed
+        reserved_names = {"con", "aux", "nul", "prn", "com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8",
+                          "com9", "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9"}
+
+        # display error message if windows reserved keywords are entered
+        if filename.lower() in reserved_names:
+            problem = f"Sorry, '{filename}' is a system reserved name and cannot be used."
 
         for letter in filename:
             if re.match(valid_char, letter):

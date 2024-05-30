@@ -7,39 +7,48 @@ from tkinter import filedialog
 
 class StorageConvertor:
     def __init__(self, parent):
+        # Initialize the main window and its components
         self.parent = parent
         self.parent.title("Digital Storage Unit Converter")
 
-        self.all_conversions = []
+        self.all_conversions = []  # List to store conversion history
 
+        # Create the main frame
         self.frame = Frame(parent, padx=10, pady=10, bg="#FFE4E1")
         self.frame.grid()
 
         button_bg = "#FF69B4"
 
+        # Label to display conversion results
         self.solution = Label(self.frame, text="", bg="#FFE4E1", fg="#FF69B4")
         self.solution.grid(row=4, columnspan=2, padx=5, pady=5)
 
-        self.current_solution = ""
-        self.solution_details = []
+        self.current_solution = ""  # Variable to store the current solution
+        self.solution_details = []  # List to store the details of the current solution
 
+        # Button to show conversion history and export it
         self.history_button = Button(self.frame, text="History / Export", bg="#FFC0CB", fg="#000000", font=("Arial", "12", "bold"), width=12, command=self.show_history)
         self.history_button.grid(row=7, column=2, columnspan=2, padx=5, pady=5)
 
+        # Button to import conversion history from a file
         self.import_button = Button(self.frame, text="Import History", bg="#ADD8E6", fg="#000000", font=("Arial", "12", "bold"), width=12, command=self.import_history)
         self.import_button.grid(row=7, column=0, columnspan=2, padx=5, pady=5)
 
     def show_history(self):
+        # Open the history/export window
         HistoryExport(self, self.all_conversions)
 
     def import_history(self):
+        # Open a file dialog to select a file for importing history
         file_path = filedialog.askopenfilename(filetypes=[("Text files", "*.txt")])
         if not file_path:
             return
 
+        # Read the file and extract the conversion history
         with open(file_path, "r") as file:
             lines = file.readlines()
 
+        # Find the starting point of the conversion history in the file
         start_index = None
         for i, line in enumerate(lines):
             if line.strip() == "Here is your calculation history (oldest to newest)...":
@@ -50,6 +59,7 @@ class StorageConvertor:
             self.solution.config(text="Invalid file format.")
             return
 
+        # Parse the history and add it to the all_conversions list
         imported_conversions = []
         for line in lines[start_index:]:
             parts = line.strip().split("\t")
@@ -67,6 +77,7 @@ class StorageConvertor:
 
 class HistoryExport:
     def __init__(self, partner, calc_list):
+        # Initialize the history/export window and its components
         max_calcs = 50
         self.var_max_calcs = IntVar()
         self.var_max_calcs.set(max_calcs)
@@ -91,6 +102,7 @@ class HistoryExport:
 
         num_calcs = len(calc_list)
 
+        # Adjust the background color and message based on the number of calculations
         if num_calcs > max_calcs:
             calc_background = "#FFE6CC"
             showing_all = f"Here are your recent calculations ({max_calcs}/{num_calcs} calculations shown). Please export your calculations to see your full calculation history."
@@ -125,6 +137,7 @@ class HistoryExport:
         self.dismiss_button.grid(row=0, column=1, padx=10, pady=10)
 
     def get_calc_string(self, var_calculations):
+        # Generate a string representation of the calculation history
         max_calcs = self.var_max_calcs.get()
         calc_string = ""
 
@@ -148,6 +161,7 @@ class HistoryExport:
         return calc_string
 
     def make_file(self):
+        # Handle the export of the history to a file
         filename = self.filename_entry.get()
 
         filename_ok = ""
@@ -171,6 +185,7 @@ class HistoryExport:
             self.filename_entry.config(bg="#F8CECC")
 
     def get_date(self):
+        # Get the current date in a specific format
         today = date.today()
         day = today.strftime("%d")
         month = today.strftime("%m")
@@ -183,6 +198,7 @@ class HistoryExport:
 
     @staticmethod
     def check_filename(filename):
+        # Validate the filename ensuring it contains only valid characters
         problem = ""
         valid_char = "[A-Za-z0-9_]"
 
@@ -201,6 +217,7 @@ class HistoryExport:
         return problem
 
     def write_to_file(self):
+        # Write the calculation history to a file
         filename = self.var_filename.get()
         generated_date = self.var_todays_date.get()
 
@@ -226,11 +243,13 @@ class HistoryExport:
             text_file.writelines(to_output_list)
 
     def close_history(self, partner):
+        # Close the history/export window and re-enable the main window's history button
         partner.history_button.config(state=NORMAL)
         self.history_box.destroy()
 
 
 if __name__ == "__main__":
+    # Initialize and run the main application
     root = Tk()
     root.title("Digital Storage Unit Converter")
     StorageConvertor(root)

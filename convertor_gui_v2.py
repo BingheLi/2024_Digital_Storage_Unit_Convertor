@@ -1,13 +1,14 @@
 from tkinter import *
 
+
 class StorageConverter:
 
     def __init__(self):
-
-        # Set up GUI Frame
+        # Set up the main frame for the GUI
         self.storage_frame = Frame(padx=10, pady=10, bg="#FFE4E1")
         self.storage_frame.grid()
 
+        # Heading for the converter
         self.storage_heading = Label(self.storage_frame,
                                      text="Digital Storage Unit Converter",
                                      font=("Arial", "16", "bold"),
@@ -15,6 +16,7 @@ class StorageConverter:
                                      fg="#FF69B4")
         self.storage_heading.grid(row=0, columnspan=4, pady=(0, 10))
 
+        # Instructions for the user
         instructions = "Please enter a value below and " \
                        "select the units to convert from and to."
         self.storage_instructions = Label(self.storage_frame,
@@ -25,10 +27,12 @@ class StorageConverter:
                                           fg="#FF69B4")
         self.storage_instructions.grid(row=1, columnspan=4, pady=(0, 10))
 
+        # Entry field for the user input
         self.storage_entry = Entry(self.storage_frame,
                                    font=("Arial", "14"))
         self.storage_entry.grid(row=2, column=0, padx=5, pady=5, sticky="we", columnspan=2)
 
+        # Label and dropdown for the "from" unit
         self.from_unit_label = Label(self.storage_frame, text="From:", bg="#FFE4E1", fg="#FF69B4")
         self.from_unit_label.grid(row=3, column=0, padx=5, pady=5, sticky=W)
 
@@ -38,6 +42,7 @@ class StorageConverter:
                                               "bytes", "kilobytes", "megabytes", "gigabytes")
         self.from_unit_dropdown.grid(row=3, column=1, padx=5, pady=5, sticky=W)
 
+        # Label and dropdown for the "to" unit
         self.to_unit_label = Label(self.storage_frame, text="To:", bg="#FFE4E1", fg="#FF69B4")
         self.to_unit_label.grid(row=4, column=0, padx=5, pady=5, sticky=W)
 
@@ -47,13 +52,13 @@ class StorageConverter:
                                             "bytes", "kilobytes", "megabytes", "gigabytes")
         self.to_unit_dropdown.grid(row=4, column=1, padx=5, pady=5, sticky=W)
 
-        error = "Please enter a number"
+        # Label for displaying output or error messages
         self.output_label = Label(self.storage_frame, text="",
                                   fg="#FF69B4",
                                   bg="#FFE4E1")
         self.output_label.grid(row=5, columnspan=4)
 
-        # Buttons
+        # Clear button
         button_bg = "#FF69B4"
         self.clear_button = Button(self.storage_frame,
                                    text="Clear",
@@ -63,7 +68,7 @@ class StorageConverter:
         self.clear_button.grid(row=2, column=2, padx=5, pady=5)
 
 
-# main routine
+# Main routine to start the application
 if __name__ == "__main__":
     root = Tk()
     root.title("Digital Storage Unit Converter")

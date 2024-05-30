@@ -6,9 +6,10 @@ import re
 
 class SolutionWindow:
     def __init__(self, parent, solution_details):
-        self.solution_window = Toplevel(parent)
-        self.solution_window.title("Conversion Solution")
+        self.solution_window = Toplevel(parent)  # Create a new top-level window
+        self.solution_window.title("Conversion Solution")  # Set the title of the window
 
+        # Display each detail in solution_details as a label in the new window
         for detail in solution_details:
             Label(self.solution_window, text=detail, font=("Arial", 12)).pack(padx=20, pady=5)
 
@@ -16,13 +17,15 @@ class SolutionWindow:
 class StorageConvertor:
     def __init__(self, parent):
         self.parent = parent
-        self.parent.title("Digital Storage Unit Converter")
+        self.parent.title("Digital Storage Unit Converter")  # Set the title of the main window
 
         self.all_conversions = []  # List to store conversion history
 
+        # Create the main frame
         self.frame = Frame(parent, padx=10, pady=10, bg="#FFE4E1")
         self.frame.grid()
 
+        # Create and position labels, entry fields, and dropdown menus
         self.value_label = Label(self.frame, text="Value:", bg="#FFE4E1", fg="#FF69B4")
         self.value_label.grid(row=0, column=0, padx=5, pady=5)
 
@@ -33,7 +36,7 @@ class StorageConvertor:
         self.from_label.grid(row=1, column=0, padx=5, pady=5)
 
         self.from_unit_var = StringVar()
-        self.from_unit_var.set("bytes")
+        self.from_unit_var.set("bytes")  # Default value
         self.from_unit_dropdown = OptionMenu(self.frame, self.from_unit_var, "bytes", "kilobytes", "megabytes", "gigabytes")
         self.from_unit_dropdown.grid(row=1, column=1, padx=5, pady=5)
 
@@ -41,31 +44,35 @@ class StorageConvertor:
         self.to_label.grid(row=2, column=0, padx=5, pady=5)
 
         self.to_unit_var = StringVar()
-        self.to_unit_var.set("kilobytes")
+        self.to_unit_var.set("kilobytes")  # Default value
         self.to_unit_dropdown = OptionMenu(self.frame, self.to_unit_var, "bytes", "kilobytes", "megabytes", "gigabytes")
         self.to_unit_dropdown.grid(row=2, column=1, padx=5, pady=5)
 
         button_bg = "#FF69B4"
+        # Button to show detailed solution
         self.solution_button = Button(self.frame, text="Show Solution", bg=button_bg, fg="#FFFFFF", font=("Arial", 12, "bold"), width=12, command=self.show_solution, state=DISABLED)
         self.solution_button.grid(row=3, column=2, columnspan=1, padx=5, pady=5)
 
+        # Button to convert the input value
         self.convert_button = Button(self.frame, text="Convert", bg=button_bg, fg="#FFFFFF", font=("Arial", 12, "bold"), width=12, command=self.convert)
         self.convert_button.grid(row=3, column=0, columnspan=1, padx=5, pady=5)
 
+        # Label to display the conversion result
         self.solution = Label(self.frame, text="", bg="#FFE4E1", fg="#FF69B4")
         self.solution.grid(row=4, columnspan=2, padx=5, pady=5)
 
-        self.current_solution = ""
-        self.solution_details = []
+        self.current_solution = ""  # Variable to store the current solution
+        self.solution_details = []  # List to store the details of the current solution
 
+        # Button to show conversion history and export it
         self.history_button = Button(self.frame, text="History / Export", bg="#FFC0CB", fg="#000000", font=("Arial", "12", "bold"), width=12, command=self.show_history, state=DISABLED)
         self.history_button.grid(row=7, column=2, columnspan=2, padx=5, pady=5)
 
     def convert(self):
-        from_unit = self.from_unit_var.get()
-        to_unit = self.to_unit_var.get()
+        from_unit = self.from_unit_var.get()  # Get the selected 'from' unit
+        to_unit = self.to_unit_var.get()  # Get the selected 'to' unit
 
-        value_to_convert = self.value_entry.get()
+        value_to_convert = self.value_entry.get()  # Get the input value
         if not value_to_convert:
             self.solution.config(text="Input field is empty. Please enter a number.")
             self.current_solution = ""
@@ -73,7 +80,8 @@ class StorageConvertor:
             return
 
         try:
-            value_to_convert = float(value_to_convert)
+            value_to_convert = float(value_to_convert)  # Convert the input value to a float
+            # Conversion factors from each unit to bytes
             conversion_factors = {
                 "bytes": 1,
                 "kilobytes": 1024,
@@ -81,9 +89,11 @@ class StorageConvertor:
                 "gigabytes": 1024 ** 3
             }
 
+            # Convert the input value to the target unit
             converted_value = value_to_convert * (conversion_factors[from_unit] / conversion_factors[to_unit])
             conversion_factor = conversion_factors[from_unit] / conversion_factors[to_unit]
 
+            # Format the converted value
             if converted_value < 1e-5:
                 formatted_value = "{:.5e}".format(converted_value)
             else:
@@ -154,6 +164,7 @@ class HistoryExport:
 
         num_calcs = len(calc_list)
 
+        # Adjust the background color and message based on the number of calculations
         if num_calcs > max_calcs:
             calc_background = "#FFE6CC"
             showing_all = f"Here are your recent calculations ({max_calcs}/{num_calcs} calculations shown). Please export your calculations to see your full calculation history."
@@ -188,9 +199,11 @@ class HistoryExport:
         self.dismiss_button.grid(row=0, column=1, padx=10, pady=10)
 
     def get_calc_string(self, var_calculations):
+        # Generate a string representation of the calculation history
         max_calcs = self.var_max_calcs.get()
         calc_string = ""
 
+        # Create a string of calculations, oldest first
         oldest_first = ""
         for item in var_calculations:
             oldest_first += item
@@ -198,11 +211,13 @@ class HistoryExport:
 
         self.var_calc_list.set(oldest_first)
 
+        # Determine how many calculations to show
         if len(var_calculations) >= max_calcs:
             stop = max_calcs
         else:
             stop = len(var_calculations)
 
+        # Create a string of the most recent calculations, newest first
         for item in range(0, stop):
             calc_string += var_calculations[len(var_calculations) - item - 1]
             calc_string += "\n"
@@ -211,6 +226,7 @@ class HistoryExport:
         return calc_string
 
     def make_file(self):
+        # Handle the export of the history to a file
         filename = self.filename_entry.get()
 
         filename_ok = ""
@@ -234,6 +250,8 @@ class HistoryExport:
             self.filename_entry.config(bg="#F8CECC")
 
     def get_date(self):
+        # Get the current date in a specific format
+
         today = date.today()
         day = today.strftime("%d")
         month = today.strftime("%m")
@@ -246,6 +264,8 @@ class HistoryExport:
 
     @staticmethod
     def check_filename(filename):
+        # Validate the filename ensuring it contains only valid characters
+
         problem = ""
         valid_char = "[A-Za-z0-9_]"
 
@@ -264,6 +284,7 @@ class HistoryExport:
         return problem
 
     def write_to_file(self):
+        # Write the calculation history to a file
         filename = self.var_filename.get()
         generated_date = self.var_todays_date.get()
 
@@ -289,6 +310,7 @@ class HistoryExport:
             text_file.writelines(to_output_list)
 
     def close_history(self, partner):
+        # Close the history/export window and re-enable the main window's history button
         partner.history_button.config(state=NORMAL)
         self.history_box.destroy()
 
